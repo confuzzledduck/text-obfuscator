@@ -2,7 +2,7 @@
 Contributors: ConfuzzledDuck
 Tags: word replacement, replace, auto correct, change, anonymous, filter, text, alternative
 Requires at least: 2.7
-Tested up to: 3.3.1
+Tested up to: 3.8
 Stable tag: 1.3.1
 
 Replaces words and phrases in your posts' content with alternative words and phrases.
@@ -20,6 +20,9 @@ More information and support is available at [Flutt.co.uk](http://www.flutt.co.u
 Simply upload the plugin directory to your plugin directory, activate the plugin, and configure it through the Tools->Text Obfuscator menu.
 
 == Changelog ==
+
+= 1.3.2 =
+ * Minor change to comments.
 
 = 1.3.1 =
  * Modified the behaviour surrounding preceeding and trailing whitespace in tokens and values.
