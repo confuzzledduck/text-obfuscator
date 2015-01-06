@@ -4,7 +4,7 @@
 
 	Plugin Name: Text Obfuscator
 	Plugin URI: http://www.flutt.co.uk/development/wordpress-plugins/text-obfuscator/
-	Version: 1.3.2
+	Version: 1.4
 	Description: Text Obfuscator is a simple plugin for replacing words and phrases in post or page content and comments with alternative words and phrases. Initially designed to remove names from personal blog posts, it can be used to correct common spelling errors or automatically expand abbreviations.
 	Author: ConfuzzledDuck
 	Author URI: http://www.flutt.co.uk/
@@ -15,7 +15,7 @@
 #  text-obfuscator.php
 #
 #  Created by Jonathon Wardman on 04-10-2008.
-#  Copyright 2008 - 2014, Jonathon Wardman. All rights reserved.
+#  Copyright 2008 - 2015, Jonathon Wardman. All rights reserved.
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -239,9 +239,17 @@ function obfuscator_admin_page() {
 					<option value="sensitive" <?php echo ( isset( $replacementData[$i]['case'] ) && 'sensitive' == $replacementData[$i]['case'] ) ? 'selected="selected"' : ''; ?>>Match case</option>
 				</select>
 				<select name="obfuscator_replacements[<?php echo esc_attr( $i ); ?>][type]">
-					<option value="all" <?php echo ( isset( $replacementData[$i]['type'] ) && 'all' == $replacementData[$i]['type'] ) ? 'selected="selected"' : ''; ?>>Posts &amp; pages</option>
+					<option value="all" <?php echo ( isset( $replacementData[$i]['type'] ) && 'all' == $replacementData[$i]['type'] ) ? 'selected="selected"' : ''; ?>>All public content</option>
 					<option value="post" <?php echo ( isset( $replacementData[$i]['type'] ) && 'post' == $replacementData[$i]['type'] ) ? 'selected="selected"' : ''; ?>>Posts only</option>
 					<option value="page" <?php echo ( isset( $replacementData[$i]['type'] ) && 'page' == $replacementData[$i]['type'] ) ? 'selected="selected"' : ''; ?>>Pages only</option>
+<?php
+		$customPostTypes = get_post_types(array('_builtin' => false));
+		if (count($customPostTypes) > 0) {
+			foreach ($customPostTypes AS $customPostType) {
+				echo '<option value="'.$customPostType.'" '.( ( isset( $replacementData[$i]['type'] ) && $customPostType == $replacementData[$i]['type'] ) ? 'selected="selected"' : '').'>'.ucfirst($customPostType).'</option>'.PHP_EOL;
+			}
+		}
+?>
 				</select>
 			</td>
 			<td>
@@ -325,8 +333,7 @@ function obfuscator_filter( $content, $content_type = 'posts' ) {
 		foreach ( $replacementData AS $replacementItem ) {
 			if ( ! isset( $replacementItem['location'] ) || ( 'post' == $replacementItem['location'] ) ) {
 				if ( ! isset( $replacementItem[$content_type] ) || ( true == $replacementItem[$content_type] ) ) {
-					//if ( ( 'all' == $replacementItem['type'] ) || ( ( 'post' == $replacementItem['type'] ) && ( is_single() ) ) || ( ( 'page' == $replacementItem['type'] ) && ( is_page() ) ) ) {
-					if ( ( 'all' == $replacementItem['type'] ) || ( ( 'page' == $replacementItem['type'] ) && ( is_page() ) ) || ( ( 'post' == $replacementItem['type'] ) && ( ! is_page() ) ) ) {
+					if ( ( 'all' == $replacementItem['type'] ) || ( get_post_type() == $replacementItem['type'] ) ) {
 						if ( $replacementElements = obfuscator_build_replacement_elements( $replacementItem ) ) {
 							$replacementTokens[] = $replacementElements['token'];
 							$replacementValues[] = $replacementElements['value'];
