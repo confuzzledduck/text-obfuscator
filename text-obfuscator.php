@@ -308,11 +308,12 @@ function obfuscator_build_replacement_elements( $replacementItem ) {
 			$caseModifier = 'i';
 		}
 		if ( 'part' == $replacementItem['scope'] ) {
-			return array( 'token' => '/'.preg_quote( $replacementItem['token'], '/' ).'/'.$caseModifier,
-			              'value' => $replacementItem['value'] );
+			$boundary = '\b';
 		} else {
-			return array( 'token' => '/([\W\s]?)'.preg_quote( $replacementItem['token'], '/' ).'([\W\s]+)/'.$caseModifier,
-			              'value' => '\\1'.$replacementItem['value'].'\\2' );
+			$boundary = '';
+		}
+		return array( 'token' => '/'.$boundary.preg_quote( $replacementItem['token'], '/' ).$boundary.'/'.$caseModifier,
+		              'value' => $replacementItem['value'] );
 		}
 	} else {
 		return false;
