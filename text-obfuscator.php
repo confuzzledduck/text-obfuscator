@@ -128,6 +128,7 @@ function obfuscator_sanitize_options( $data ) {
 			                                     'scope' => ( isset( $replacementPair['scope'] ) && ( 'part' == $replacementPair['scope'] ) ) ? 'part' : 'full',
 			                                     'case' => ( isset( $replacementPair['case'] ) && ( 'insensitive' == $replacementPair['case'] ) ) ? 'insensitive' : 'sensitive',
 			                                     'type' => ( isset( $replacementPair['type'] ) && ( 'post' == $replacementPair['type'] || 'page' == $replacementPair['type'] ) ) ? $replacementPair['type'] : 'all',
+			                                     'regex' => ( isset( $replacementPair['regex'] ) ) ? true : false,
 			                                     'value' => ( isset( $replacementPair['blank'] ) ) ? '' : $replacementPair['value'],
 			                                     'blank' => ( isset( $replacementPair['blank'] ) ) ? true : false,
 			                                     'location' => ( isset( $replacementPair['location'] ) && ( 'pre' == $replacementPair['location'] ) ) ? 'pre' : 'post',
@@ -204,10 +205,12 @@ function obfuscator_admin_page() {
 	<h2>Text Obfuscator admin</h2>
 	<?php if ( ( isset( $_GET['updated'] ) || isset( $_GET['settings-updated'] ) ) && ( $newPairs == false ) ) { echo '<div id="message" class="updated fade"><p><b>Your replacement rules have been updated.</b></p><p>Output rules will apply immediately, input rules will apply to any data saved from now on.</p></div>'; } ?>
 	<p>Add the term you want replacing into 'Match' and the text you want that term changing to in the 'Replace' box. Select when you want the replacement to take place and check the boxes to select which bits of content you want the filter to apply	to. To remove a rule simply delete the match string for that	line; if it's a display filter the original text will appear, if it's a save filter the replaced text will remain.</p>
+	<p>To use regular expressions in 'Match', check the box in the column labeled 'RegEx'. Backreferences to match patterns surrounded by braces () work in 'Replace' with RegEx on, otherwise your input in 'Match' gets quoted, so that using regular expressions has no effect. You may than match for '*super*', which would not work when using regular expressions. To learn more about regular expressions, visit <a href="http://php.net/manual/reference.pcre.pattern.syntax.php" target="_blank">php.net</a>.</p>
 	<table class="widefat">
 		<thead>
 		<tr valign="top">
 			<th scope="column">Match</th>
+			<th scope="column">RegEx</th>
 			<th scope="column">Replace</th>
 			<th scope="column">Content</th>
 			<th scope="column">Title</th>
@@ -252,6 +255,7 @@ function obfuscator_admin_page() {
 ?>
 				</select>
 			</td>
+			<td><input type="checkbox" name="obfuscator_replacements[<?php echo esc_attr( $i ); ?>][regex]" value="true" <?php echo ( isset( $replacementData[$i]['regex'] ) && true == $replacementData[$i]['regex'] ) ? 'checked="checked"' : ''; ?> style="margin-top: 18px;" /></td>
 			<td>
 				<input type="text" id="value-<?php echo esc_attr( $i ); ?>" name="obfuscator_replacements[<?php echo esc_attr( $i ); ?>][value]" <?php echo ( isset( $replacementData[$i]['blank'] ) && true == $replacementData[$i]['blank'] ) ? 'value="[Blank]" disabled="disabled"' : 'value="'.esc_attr( $replacementData[$i]['value'] ).'"'; ?> style="width: 220px;" /><br />
 <?php
@@ -303,17 +307,20 @@ function obfuscator_admin_page() {
 function obfuscator_build_replacement_elements( $replacementItem ) {
 
 	if ( isset( $replacementItem['token'] ) && isset( $replacementItem['value'] ) ) {
-		$caseModifier = '';
-		if ( 'insensitive' == $replacementItem['case'] ) {
-			$caseModifier = 'i';
-		}
-		if ( 'part' == $replacementItem['scope'] ) {
-			return array( 'token' => '/'.preg_quote( $replacementItem['token'], '/' ).'/'.$caseModifier,
-			              'value' => $replacementItem['value'] );
+		if ( true == $replacementItem['regex'] ) {
+			$replacement = $replacementItem['token'];
 		} else {
-			return array( 'token' => '/([\W\s]?)'.preg_quote( $replacementItem['token'], '/' ).'([\W\s]+)/'.$caseModifier,
-			              'value' => '\\1'.$replacementItem['value'].'\\2' );
+			$replacement = preg_quote( $replacementItem['token'], '/' );
 		}
+		if ( 'part' != $replacementItem['scope'] ) {
+			$replacement = '\b'.$replacement.'\b';
+		}
+		$replacement = '/'.$replacement.'/';
+		if ( 'insensitive' == $replacementItem['case'] ) {
+			$replacement = $replacement.'i';
+		}
+		return array( 'token' => $replacement,
+		              'value' => $replacementItem['value'] );
 	} else {
 		return false;
 	}
