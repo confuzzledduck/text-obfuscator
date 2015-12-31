@@ -4,7 +4,7 @@
 
 	Plugin Name: Text Obfuscator
 	Plugin URI: http://www.flutt.co.uk/development/wordpress-plugins/text-obfuscator/
-	Version: 1.4
+	Version: 1.4.1
 	Description: Text Obfuscator is a simple plugin for replacing words and phrases in post or page content and comments with alternative words and phrases. Initially designed to remove names from personal blog posts, it can be used to correct common spelling errors or automatically expand abbreviations.
 	Author: ConfuzzledDuck
 	Author URI: http://www.flutt.co.uk/
@@ -311,7 +311,7 @@ function obfuscator_build_replacement_elements( $replacementItem ) {
 			return array( 'token' => '/'.preg_quote( $replacementItem['token'], '/' ).'/'.$caseModifier,
 			              'value' => $replacementItem['value'] );
 		} else {
-			return array( 'token' => '/([\W\s]?)'.preg_quote( $replacementItem['token'], '/' ).'([\W\s]+)/'.$caseModifier,
+			return array( 'token' => '/([\W\s]?)'.preg_quote( $replacementItem['token'], '/' ).'($|[\W\s]+)/'.$caseModifier,
 			              'value' => '\\1'.$replacementItem['value'].'\\2' );
 		}
 	} else {

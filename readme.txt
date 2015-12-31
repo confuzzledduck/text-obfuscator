@@ -2,8 +2,8 @@
 Contributors: ConfuzzledDuck
 Tags: word replacement, replace, auto correct, change, anonymous, filter, text, alternative
 Requires at least: 2.7
-Tested up to: 4.1
-Stable tag: 1.4
+Tested up to: 4.4
+Stable tag: 1.4.1
 
 Replaces words and phrases in your posts' content with alternative words and phrases.
 
@@ -20,6 +20,9 @@ More information and support is available at [Flutt.co.uk](http://www.flutt.co.u
 Simply upload the plugin directory to your plugin directory, activate the plugin, and configure it through the Tools->Text Obfuscator menu.
 
 == Changelog ==
+
+= 1.4.1 =
+ * Fixed issue relating to replacement of words at the end of a line or string.
 
 = 1.4 =
  * Added ability to replace content in all post types, not just post and page.
