@@ -2,7 +2,7 @@
 Contributors: ConfuzzledDuck
 Tags: word replacement, replace, auto correct, change, anonymous, filter, text, alternative
 Requires at least: 2.7
-Tested up to: 4.4
+Tested up to: 4.7.4
 Stable tag: 1.4.1
 
 Replaces words and phrases in your posts' content with alternative words and phrases.
